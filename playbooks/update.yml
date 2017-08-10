@@ -1,0 +1,11 @@
+# Updates Satellite Servers and Satellite Capsules to the next minor version.
+
+- name: Update Satellite Servers
+  hosts: satellite-servers
+  tasks:
+    - include: tasks/satellite_server_update.yml
+
+- name: Update Satellite Capsules
+  hosts: capsule-servers
+  tasks:
+    - include: tasks/satellite_capsule_update.yml
