@@ -1,0 +1,22 @@
+satellite_mounts:
+  - lv: var
+    size: "{{ satellite_lv_var_size }}"
+    mount: "/var"
+  - lv: log
+    size: "{{ satellite_lv_log_size }}"
+    mount: "/var/log"
+  - lv: pulp
+    size: "{{ satellite_lv_pulp_size }}"
+    mount: "/var/lib/pulp"
+  - lv: pulp_cache
+    size: "{{ satellite_lv_pulp_cache_size }}"
+    mount: "/var/cache/pulp"
+  - lv: mongodb
+    size: "{{ satellite_lv_mongodb_size }}"
+    mount: "/var/lib/mongodb"
+  - lv: pgsql
+    size: "{{ satellite_lv_pgsql_size }}"
+    mount: "/var/lib/pgsql"
+  - lv: puppet_env
+    size: "{{ satellite_lv_puppet_env_size }}"
+    mount: "/etc/puppet/environment"

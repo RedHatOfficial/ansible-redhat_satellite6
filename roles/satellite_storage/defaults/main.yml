@@ -1,0 +1,9 @@
+satellite_pvs: /dev/vdb
+satellite_vg: vg_satellite
+satellite_lv_var_size: 5g
+satellite_lv_log_size: 5g
+satellite_lv_pulp_size: 10g
+satellite_lv_pulp_cache_size: 5g
+satellite_lv_mongodb_size: 10g
+satellite_lv_pgsql_size: 0g
+satellite_lv_puppet_env_size: 0g

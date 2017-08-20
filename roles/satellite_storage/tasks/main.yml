@@ -1,0 +1,48 @@
+# OVERVIEW
+#  TODO
+#
+# VARS
+#   satellite_vg     - Volume Group for Satellite to use
+#   satellite_mounts - list of satellite mounts
+#     lv    - Logical Volume name
+#     size  - size of the mount
+#     mount - directory to mount
+#
+# SOURCE
+#   https://access.redhat.com/solutions/67781
+
+- name: Install rsync
+  package:
+    name: rsync
+    state: latest
+  tags:
+    - backup_future_mount_destination
+
+- name: "Create {{ satellite_vg }} Volume Group"
+  lvg:
+    vg: "{{ satellite_vg }}"
+    pvs: "{{ satellite_pvs }}"
+
+- name: Check if mount points already mounted
+  command: "mountpoint {{item.mount }}"
+  failed_when: False
+  changed_when: False
+  register: mounts_stats
+  when: ( item.size | regex_replace('^([0-9]*).*', '\\1') | int ) != 0
+  with_items: "{{ satellite_mounts }}"
+  tags:
+    - backup_future_mount_destination
+
+- name: Include task list to create mount points
+  include: create_mount.yml
+  vars:
+    lv: "{{ item.0.lv }}"
+    size: "{{ item.0.size }}"
+    mount: "{{ item.0.mount }}"
+  when:
+    - ( item.0.size | regex_replace('^([0-9]*).*', '\\1') | int ) != 0
+    - item.1.rc != 0
+  with_together:
+    - "{{ satellite_mounts }}"
+    - "{{ mounts_stats.results }}"
+  
