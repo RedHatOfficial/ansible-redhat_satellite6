@@ -1,0 +1,39 @@
+- name: Get last used activation key
+  slurp:
+    src: /tmp/ansible-satellite_register-activation_key
+  register: last_activation_key
+
+- name: Get Subscription Manager status
+  command: subscription-manager status
+  failed_when: False
+  changed_when: False
+  register: subscription_manager_status
+
+- block:
+    - name: Write last used activation key to file
+      copy:
+        dest: /tmp/ansible-satellite_register-activation_key
+        content: "{{ satellite_activation_key }}"
+  
+    - name: Clean Subscription Manager
+      command: subscription-manager clean
+    
+    - name: Install Satellite CA Certificate
+      yum:
+        state: present
+        name: "http://{{ satellite_url }}/pub/katello-ca-consumer-latest.noarch.rpm"
+    
+    - name: Register
+      redhat_subscription:
+        state: present
+        org_id: "{{ satellite_org }}"
+        activationkey: "{{ satellite_activation_key }}"
+    
+    - name: Install katello-agent
+      yum:
+        state: present
+        name: katello-agent
+  when:
+    - subscription_manager_status.rc != 0 or
+      last_activation_key|failed or
+      (last_activation_key['content'] | b64decode) != satellite_activation_key
