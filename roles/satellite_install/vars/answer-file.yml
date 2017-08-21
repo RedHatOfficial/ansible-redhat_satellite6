@@ -1,0 +1,26 @@
+---
+answer_file_settings:
+  - { regex: 'parent_fqdn', setting: "satellite.example.com" }
+  - { regex: 'pulp_admin_password', setting: "password" }
+  - { regex: 'satellite_initial_organization', setting: "example_corp" }
+  - { regex: 'satellite_initial_location', setting: "home" }
+  - { regex: 'satellite_admin_user', setting: "admin" }
+  - { regex: 'satellite_admin_passwd', setting: "password" }
+  - { regex: 'satellite_db_username', setting: "foreman" }
+  - { regex: 'satellite_db_password', setting: "password" }
+  - { regex: 'system_name', setting: "satellite.example.com" }
+  - { regex: 'system_name_http', setting: "http://satellite.example.com:8000" }
+  - { regex: 'system_name_https', setting: "https://satellite.example.com" }
+  - { regex: 'system_name_puppet', setting: "https://satellite.example.com:8140" }
+  - { regex: 'dns_tsig_principal_entry', setting: "foremanproxy/satellite.internal@example.com.internal" }
+  - { regex: 'ca_gen_certificate', setting: "true" }
+  - { regex: 'ca_country', setting: "US" }
+  - { regex: 'ca_state', setting: "North Carolina" }
+  - { regex: 'ca_city', setting: "Raleigh" }
+  - { regex: 'ca_org', setting: "Katello" }
+  - { regex: 'ca_org_unit', setting: "SomeOrgUnit" }
+  - { regex: 'ca_crt_expiration', setting: "36500" }
+  - { regex: 'ca_default_name', setting: "katello-default-ca" }
+  - { regex: 'ca_default_sever_name', setting: "katello-server-ca" }
+
+

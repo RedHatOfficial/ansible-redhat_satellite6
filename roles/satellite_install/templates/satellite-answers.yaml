@@ -1,0 +1,334 @@
+# Format:
+# <classname>: false - don't include this class
+# <classname>: true - include and use the defaults
+# <classname>:
+#   <param>: <value> - include and override the default(s)
+#
+# See params.pp in each class for what options are available
+
+---
+  capsule:
+    parent_fqdn: "{{ parent_fqdn }}"
+    certs_tar:
+    pulp_master: true
+    pulp_admin_password: "{{ pulp_admin_passwd }}"
+    pulp_oauth_effective_user: admin
+    pulp_oauth_key: katello
+    pulp_oauth_secret:
+    puppet: true
+    puppet_ca_proxy:
+    reverse_proxy: false
+    reverse_proxy_port: "8443"
+    rhsm_url: /rhsm
+    qpid_router: true
+    qpid_router_hub_addr: "0.0.0.0"
+    qpid_router_hub_port: "5646"
+    qpid_router_agent_addr: "0.0.0.0"
+    qpid_router_agent_port: "5647"
+    qpid_router_broker_addr: "{{ system_name }}"
+    qpid_router_broker_port: "5671"
+    enable_ostree: false
+  certs:
+    log_dir: /var/log/certs
+    node_fqdn: "{{ system_name }}"
+    generate: "{{ ca_gen_certificate }}"
+    regenerate: false
+    regenerate_ca: false
+    deploy: true
+    ca_common_name: "{{ system_name }}"
+    country: "{{ ca_country }}"
+    state: "{{ ca_state }}"
+    city: "{{ ca_city }}"
+    org: "{{ ca_org }}"
+    org_unit: "{{ ca_org_unit }}"
+    expiration: "7300"
+    ca_expiration: "{{ ca_crt_organization }}"
+    server_cert:
+    server_key:
+    server_cert_req:
+    server_ca_cert:
+    pki_dir: /etc/pki/katello
+    ssl_build_dir: /root/ssl-build
+    password_file_dir: "certs::params::password_file_dir"
+    user: root
+    group: foreman
+    default_ca_name: "{{ ca_default_name }}"
+    server_ca_name: "{{ ca_default_server_name }}"
+  foreman:
+    foreman_url: "{{ system_name_https }}"
+    puppetrun: false
+    unattended: true
+    authentication: true
+    passenger: true
+    passenger_ruby: /usr/bin/tfm-ruby
+    passenger_ruby_package: tfm-rubygem-passenger-native
+    plugin_prefix: tfm-rubygem-foreman_
+    use_vhost: true
+    servername: "{{ system_name }}"
+    serveraliases:
+      - foreman
+    ssl: true
+    custom_repo: true
+    repo: stable
+    configure_epel_repo: false
+    configure_scl_repo: false
+    configure_brightbox_repo: false
+    selinux:
+    gpgcheck: true
+    version: present
+    db_manage: true
+    db_type: postgresql
+    db_adapter:
+    db_host:
+    db_port:
+    db_database:
+    db_username: "{{ satellite_db_username }}"
+    db_password: "{{ satellite_db_password }}"
+    db_sslmode:
+    db_pool: 5
+    apipie_task: "apipie:cache:index"
+    app_root: /usr/share/foreman
+    manage_user: true
+    user: foreman
+    group: foreman
+    user_groups:
+      - puppet
+    environment: production
+    puppet_home: /var/lib/puppet
+    locations_enabled: true
+    organizations_enabled: true
+    passenger_interface:
+    server_ssl_ca: /etc/pki/katello/certs/katello-default-ca.crt
+    server_ssl_chain: /etc/pki/katello/certs/katello-default-ca.crt
+    server_ssl_cert: /etc/pki/katello/certs/katello-apache.crt
+    server_ssl_certs_dir: ""
+    server_ssl_key: /etc/pki/katello/private/katello-apache.key
+    server_ssl_crl: false
+    oauth_active: true
+    oauth_map_users: false
+    oauth_consumer_key: C9vvEUHgxrpbLqMBQBfM6sYxwSKHFzdt
+    oauth_consumer_secret: osTcHa25wqrBDc449NsraqNpmY2zBKQn
+    passenger_prestart: true
+    passenger_min_instances: "1"
+    passenger_start_timeout: "600"
+    admin_username: "{{ satellite_admin_user }}"
+    admin_password: "{{ satellite_admin_passwd }}"
+    admin_first_name:
+    admin_last_name:
+    admin_email:
+    initial_organization: "{{ satellite_initial_organization }}"
+    initial_location: "{{ satellite_initial_location }}"
+    ipa_authentication: false
+    http_keytab: /etc/httpd/conf/http.keytab
+    pam_service: foreman
+    ipa_manage_sssd: true
+    websockets_encrypt: true
+    websockets_ssl_key: /etc/pki/katello/private/katello-apache.key
+    websockets_ssl_cert: /etc/pki/katello/certs/katello-apache.crt
+    logging_level: info
+    loggers: {}
+    email_conf: email.yaml
+    email_source: email.yaml.erb
+    email_delivery_method:
+    email_smtp_address:
+    email_smtp_port: 25
+    email_smtp_domain:
+    email_smtp_authentication: none
+    email_smtp_user_name:
+    email_smtp_password:
+  "foreman::plugin::bootdisk": false
+  "foreman::plugin::discovery":
+    install_images: false
+    tftp_root: /var/lib/tftpboot
+    source_url: "http://downloads.theforeman.org/discovery/releases/latest/"
+    image_name: fdi-image-latest.tar
+  "foreman::plugin::openscap":
+    configure_openscap_repo: false
+  "foreman::plugin::remote_execution": {}
+  "foreman::plugin::tasks":
+    package: tfm-rubygem-foreman-tasks
+    service: foreman-tasks
+  "foreman::plugin::hooks": true
+  foreman_proxy:
+    repo: stable
+    gpgcheck: true
+    custom_repo: true
+    version: present
+    plugin_version: installed
+    bind_host: "*"
+    port:
+    http_port: 8000
+    ssl_port: 9090
+    dir: /usr/share/foreman-proxy
+    user: foreman-proxy
+    log: /var/log/foreman-proxy/proxy.log
+    log_level: ERROR
+    log_buffer: 2000
+    log_buffer_errors: 1000
+    http: true
+    ssl: true
+    ssl_ca: /etc/foreman-proxy/ssl_ca.pem
+    ssl_cert: /etc/foreman-proxy/ssl_cert.pem
+    ssl_key: /etc/foreman-proxy/ssl_key.pem
+    foreman_ssl_ca: /etc/foreman-proxy/foreman_ssl_ca.pem
+    foreman_ssl_cert: /etc/foreman-proxy/foreman_ssl_cert.pem
+    foreman_ssl_key: /etc/foreman-proxy/foreman_ssl_key.pem
+    trusted_hosts:
+      - "{{ system_name }}"
+    ssl_disabled_ciphers: []
+    manage_sudoersd: true
+    use_sudoersd: true
+    puppetca: true
+    puppetca_listen_on: https
+    ssldir: /var/lib/puppet/ssl
+    puppetdir: /etc/puppet
+    autosign_location: /etc/puppet/autosign.conf
+    puppetca_cmd: "/usr/bin/puppet cert"
+    puppet_group: puppet
+    puppetrun: true
+    puppetrun_listen_on: https
+    puppetrun_cmd: "/usr/bin/puppet kick"
+    puppetrun_provider:
+    customrun_cmd: /bin/false
+    customrun_args: "-ay -f -s"
+    puppetssh_sudo: false
+    puppetssh_command: "/usr/bin/puppet agent --onetime --no-usecacheonfailure"
+    puppetssh_user: root
+    puppetssh_keyfile: /etc/foreman-proxy/id_rsa
+    puppetssh_wait: false
+    salt_puppetrun_cmd: puppet.run
+    puppet_user: root
+    puppet_url: "{{ system_name_puppet }}"
+    puppet_ssl_ca: /var/lib/puppet/ssl/certs/ca.pem
+    puppet_ssl_cert: /var/lib/puppet/ssl/certs/"{{ system_name }}".pem
+    puppet_ssl_key: /var/lib/puppet/ssl/private_keys/"{{ system_name }}".pem
+    puppet_use_environment_api:
+    templates: false
+    templates_listen_on: both
+    template_url: "{{ system_name_http }}"
+    logs: false
+    logs_listen_on: https
+    tftp: false
+    tftp_listen_on: https
+    tftp_manage_wget: true
+    tftp_syslinux_root:
+    tftp_syslinux_files:
+    tftp_syslinux_filenames:
+      - /usr/share/syslinux/chain.c32
+      - /usr/share/syslinux/menu.c32
+      - /usr/share/syslinux/memdisk
+      - /usr/share/syslinux/pxelinux.0
+    tftp_root: /var/lib/tftpboot
+    tftp_dirs:
+      - /var/lib/tftpboot/pxelinux.cfg
+      - /var/lib/tftpboot/boot
+      - /var/lib/tftpboot/ztp.cfg
+      - /var/lib/tftpboot/poap.cfg
+    tftp_servername:
+    dhcp: false
+    dhcp_split_config_files: true
+    dhcp_listen_on: https
+    dhcp_managed: true
+    dhcp_provider: isc
+    dhcp_vendor:
+    dhcp_option_domain:
+      - us-gov-west-1.compute.internal
+    dhcp_interface: eth0
+    dhcp_gateway: "192.168.100.1"
+    dhcp_range: false
+    dhcp_nameservers: default
+    dhcp_server: "127.0.0.1"
+    dhcp_config: /etc/dhcp/dhcpd.conf
+    dhcp_leases: /var/lib/dhcpd/dhcpd.leases
+    dhcp_key_name:
+    dhcp_key_secret:
+    dhcp_omapi_port: 7911
+    dns: false
+    dns_split_config_files: true
+    dns_listen_on: https
+    dns_managed: true
+    dns_provider: nsupdate
+    dns_interface: eth0
+    dns_zone: us-gov-west-1.compute.internal
+    dns_reverse: "100.168.192.in-addr.arpa"
+    dns_server: "127.0.0.1"
+    dns_ttl: "86400"
+    dns_tsig_keytab: /etc/foreman-proxy/dns.keytab
+    dns_tsig_principal: "{{ dns_tsig_principal_entry }}"
+    dns_forwarders: []
+    virsh_network: default
+    bmc: false
+    bmc_listen_on: https
+    bmc_default_provider: ipmitool
+    realm: false
+    realm_listen_on: https
+    realm_provider: freeipa
+    realm_keytab: /etc/foreman-proxy/freeipa.keytab
+    realm_principal: "realm-proxy@EXAMPLE.COM"
+    freeipa_remove_dns: true
+    keyfile: /etc/rndc.key
+    register_in_foreman: true
+    foreman_base_url: "{{ system_name_https }}"
+    registered_name: "{{ system_name }}"
+    registered_proxy_url:
+    oauth_effective_user: admin
+    oauth_consumer_key: C9vvEUHgxrpbLqMBQBfM6sYxwSKHFzdt
+    oauth_consumer_secret: osTcHa25wqrBDc449NsraqNpmY2zBKQn
+    puppet_use_cache:
+    puppet_cache_location: /var/cache/foreman-proxy
+  "foreman_proxy::plugin::discovery":
+    install_images: false
+    tftp_root: /var/lib/tftpboot
+    source_url: "http://downloads.theforeman.org/discovery/releases/latest/"
+    image_name: fdi-image-latest.tar
+  "foreman_proxy::plugin::openscap":
+    enabled: true
+    version:
+    listen_on: https
+    openscap_send_log_file: /var/log/foreman-proxy/openscap-send.log
+    spooldir: /var/spool/foreman-proxy/openscap
+    contentdir: /var/lib/foreman-proxy/openscap/content
+    reportsdir: /var/lib/foreman-proxy/openscap/reports
+    failed_dir: /var/lib/foreman-proxy/openscap/failed
+  "foreman_proxy::plugin::pulp":
+    enabled: true
+    listen_on: https
+    pulpnode_enabled: false
+    version:
+    group:
+    pulp_url: "{{ system_name_https }}/pulp"
+    pulp_dir: /var/lib/pulp
+    pulp_content_dir: /var/lib/pulp/content
+    mongodb_dir: /var/lib/mongodb
+  "foreman_proxy::plugin::remote_execution::ssh":
+    enabled: true
+    listen_on: https
+    generate_keys: true
+    ssh_identity_dir: /usr/share/foreman-proxy/.ssh
+    ssh_identity_file: id_rsa_foreman_proxy
+    ssh_keygen: /usr/bin/ssh-keygen
+    local_working_dir: /var/tmp
+    remote_working_dir: /var/tmp
+  katello:
+    user: foreman
+    group: foreman
+    user_groups: foreman
+    oauth_key: katello
+    oauth_secret: YnTmjEv5u8UbssfmvGtLRixkJfz8qBNZ
+    post_sync_token: zEaLJjFfH65kc2ULtpDNKA9C97cSJCch
+    num_pulp_workers: "8"
+    max_tasks_per_pulp_worker: 2
+    log_dir: /var/log/foreman/plugins
+    config_dir: /etc/foreman/plugins
+    use_passenger: "katello::params::use_passenger"
+    proxy_url:
+    proxy_port:
+    proxy_username:
+    proxy_password:
+    cdn_ssl_version:
+    package_names:
+      - katello
+      - tfm-rubygem-katello
+    enable_ostree: false
+    max_keep_alive: 10000
+    repo_export_dir: /var/lib/pulp/katello-export

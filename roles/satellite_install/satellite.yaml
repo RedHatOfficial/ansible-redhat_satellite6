@@ -1,0 +1,9 @@
+---
+## Role to deploy Satellite 6.2+
+- name: MAIN | Deploying satellite server
+  hosts: satellite
+  vars_files:
+    - vars/main.yml
+  remote_user: root
+  tasks:
+    - include: tasks/main.yml

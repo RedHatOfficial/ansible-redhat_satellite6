@@ -1,0 +1,21 @@
+---
+- name: install_software | Clear out existing repos
+  command: subscription-manager repos --disable "*"
+
+- name: install_software | Enable the correct repos for Satellite
+  command: subscription-manager repos  --enable rhel-7-server-satellite-{{satellite_version}}-rpms --enable rhel-7-server-rpms --enable rhel-server-rhscl-7-rpms
+
+- name: install_software | Clean out any residual metadata from old repositories
+  command: yum clean all
+
+- name: install_software | Update currently installed  packages
+  yum:
+    name: "*"
+    state: latest
+
+- name: install_software | Install Satellite and Additional Packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - "{{ packages_list }}"
