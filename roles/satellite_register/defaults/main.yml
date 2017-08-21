@@ -1,0 +1,29 @@
+# Insert Satellite FQDN here
+sat6_fqdn: ''
+
+# If you want to autosubscribe. Defaults to 'false'
+auto_subscribe: ''
+
+# Admin user to use. Can put here, but recommend
+# stashing in vault.
+admin_user: ''
+
+# Store vault_admin_pass into a vaulted file!
+admin_pass: "{{ vault_admin_pass }}"
+
+# Organization Name. Wrap for full string if spaces exist
+org: ''
+
+# Location name, as above, wrap for full string if spaces exists
+loc: nyc
+
+# Set host group to false if you don't want to run bootstrap.py
+# If a host group is defined, it will register to the host group defined.
+hostgroup: ''
+
+# Activation key to use.
+# TODO: Generate a default from API if it already exists, elsewise, use this
+activation_key: ''
+
+# Whether or not to update all packages on host
+update_packages: 'false'
