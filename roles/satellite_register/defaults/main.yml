@@ -23,7 +23,7 @@ satellite_hostgroup: ''
 
 # Activation key to use.
 # TODO: Generate a default from API if it already exists, elsewise, use this
-activation_key: ''
+satellite_activation_key: ''
 
 # Whether or not to update all packages on host
 update_packages: 'false'
