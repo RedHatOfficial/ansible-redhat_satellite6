@@ -1,5 +1,5 @@
 # Insert Satellite FQDN here
-sat6_fqdn: ''
+satellite_fqdn: ''
 
 # If you want to autosubscribe. Defaults to 'false'
 auto_subscribe: ''
@@ -12,14 +12,14 @@ admin_user: ''
 admin_pass: "{{ vault_admin_pass }}"
 
 # Organization Name. Wrap for full string if spaces exist
-org: ''
+satellite_org: ''
 
 # Location name, as above, wrap for full string if spaces exists
-loc: nyc
+satellite_location: nyc
 
 # Set host group to false if you don't want to run bootstrap.py
 # If a host group is defined, it will register to the host group defined.
-hostgroup: ''
+satellite_hostgroup: ''
 
 # Activation key to use.
 # TODO: Generate a default from API if it already exists, elsewise, use this

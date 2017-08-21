@@ -1,14 +1,14 @@
 
 ---
 # Register machines to Satellite 6.X
-- name: SATELLITE | Download bootstrap.py from the {{ sat6_fqdn }}
+- name: SATELLITE | Download bootstrap.py from the {{ satellite_fqdn }}
   get_url:
-    url: "http://{{ sat6_fqdn }}/pub/bootstrap.py"
+    url: "http://{{ satellite_fqdn }}/pub/bootstrap.py"
     dest: /usr/local/sbin/bootstrap.py
     mode: 0755
     owner: root
     group: root
-  when: hostgroup != 'false'
+  when: satellite_hostgroup != 'false'
   register: sat_url_result
   until: sat_url_result | succeeded
   retries: 10
@@ -16,29 +16,29 @@
   ignore_errors: yes
 
 - name: SATELLITE | Register to Satellite 6 through bootstrap.py and activation key
-  command: "/usr/local/sbin/bootstrap.py -l {{ admin_user | default('foreman')}} -p {{ admin_pass }} -s {{ sat6_fqdn }} -o {{ org | default('Default Organization')}} -L {{ loc }} -g {{ hostgroup }} -a {{ activation_key }}"
-  when: hostgroup != 'false'
+  command: "/usr/local/sbin/bootstrap.py -l {{ admin_user | default('foreman')}} -p {{ admin_pass }} -s {{ satellite_fqdn }} -o {{ org | default('Default Organization')}} -L {{ satellite_location }} -g {{ satellite_hostgroup }} -a {{ activation_key }}"
+  when: satellite_hostgroup != 'false'
 
-- name: SATELLITE | Install the katello-ca-consumer-latest.noarch.rpm from {{ sat6_fqdn }}
+- name: SATELLITE | Install the katello-ca-consumer-latest.noarch.rpm from {{ satellite_fqdn }}
   yum:
-    name: http://{{ sat6_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm
+    name: http://{{ satellite_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm
     state: present
-  when: hostgroup == 'false'
+  when: satellite_hostgroup == 'false'
 
 - name: SATELLITE |  Register to Satellite6 only for content
   redhat_subscription:
     state: present
     activationkey: "{{ activation_key }}"
-    org_id: "{{ org }}"
+    org_id: "{{ satellite_org }}"
     autosubscribe: "{{ auto_subscribe | default('false')}}"
-  when: hostgroup == 'false'
+  when: satellite_hostgroup == 'false'
   register: 'registration_return'
 
 - name: Satellite | Install the katello-agent
   yum:
     name: katello-agent
     state: latest
-  when: hostgroup == 'false' and registration_return|success
+  when: satellite_hostgroup == 'false' and registration_return|success
   notify: enable katello-agent
 
 - name: Satellite | Update all packages on host
