@@ -1,0 +1,20 @@
+---
+- name: registration | Register machine with RHN
+  command: /usr/bin/subscription-manager register --username={{ rhn_user }} --password={{ rhn_password }} --name={{ hostname_full }}
+  tags:
+    - rhn
+  ignore_errors: yes
+
+- name: registration | Get Satellite pool ID
+  shell: /usr/bin/subscription-manager list --all --available --matches="*Satellite*" | awk '/Pool ID/ {print $3}' | head -1
+  tags:
+    - rhn
+  register: pool_id
+  ignore_errors: yes
+
+#Attaching the system to the right Pool
+- name: registration | Attach machine with Satellite pool ID
+  command: /usr/bin/subscription-manager attach --pool={{ pool_id.stdout }}
+  tags:
+    - rhn
+  ignore_errors: yes

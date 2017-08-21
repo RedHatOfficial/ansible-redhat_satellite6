@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  remote_user: root
+  tasks:
+    - name: Test to avoid travis - cannot test user registration without appropraite credentials
+      ping:
+    
+  #roles:
+  #  - satellite6-install
