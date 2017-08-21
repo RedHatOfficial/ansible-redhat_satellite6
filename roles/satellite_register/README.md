@@ -14,8 +14,8 @@ An Ansible role for registering hosts with Red Hat Satellite 6 using Activation 
 | admin_user               | yes      |         |         | User to view API with. Recommend a service account.         |
 | admin_pass               | yes      |         |         | Admin Password to use. Store this in VAULT.          |
 | satellite_activation_key | yes      |         |         | Satellite Activation Keys to register with.         |
-| update_packages | no      |    false     |    true/false     | Satellite Activation Keys to register with.         |
-| auto_subscribe | no      | false    | true/false     | Satellite Activation Keys to register with.         |
+| update_packages | no      |    false     |    true/false     | Whether or not to update all pacakges on host         |
+| auto_subscribe | no      | false    | true/false     | Whether or not to auto subscribe on registration  |
 
 
 # Set host group to false if you don't want to run bootstrap.py
