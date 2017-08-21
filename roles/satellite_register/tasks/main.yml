@@ -15,8 +15,8 @@
   delay: 1
   ignore_errors: yes
 
-- name: SATELLITE | Register to Satellite 6 through bootstrap.py and activation key
-  command: "/usr/local/sbin/bootstrap.py -l {{ admin_user | default('foreman')}} -p {{ admin_pass }} -s {{ satellite_fqdn }} -o {{ org | default('Default Organization')}} -L {{ satellite_location }} -g {{ satellite_hostgroup }} -a {{ activation_key }}"
+- name: SATELLITE | Register to Satellite 6 through bootstrap.py
+  command: "/usr/local/sbin/bootstrap.py -l {{ satellite_admin_user | default('foreman')}} -p {{ satellite_admin_pass }} -s {{ satellite_fqdn }} -o {{ org | default('Default Organization')}} -L {{ satellite_location }} -g {{ satellite_hostgroup }} -a {{ activation_key }}"
   when: satellite_hostgroup != 'false'
 
 - name: SATELLITE | Install the katello-ca-consumer-latest.noarch.rpm from {{ satellite_fqdn }}
@@ -25,7 +25,7 @@
     state: present
   when: satellite_hostgroup == 'false'
 
-- name: SATELLITE |  Register to Satellite6 only for content
+- name: SATELLITE |  Register to Satellite, will only receive content views
   redhat_subscription:
     state: present
     activationkey: "{{ activation_key }}"
