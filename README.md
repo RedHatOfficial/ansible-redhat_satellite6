@@ -8,4 +8,4 @@ Performs a micro update of Satellite 6. For example from Satellite 6.2.9 to Sate
 
 ### Expected Host Groups
 * `satellite-servers` - Satellite Servers to perform the update on
-* `capsule-servers` - Satellite Capsules to perform the update on
+* `satellite-capsule-servers` - Satellite Capsule Servers to perform the update on
