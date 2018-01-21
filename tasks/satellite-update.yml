@@ -16,9 +16,6 @@
 - name: Satellite | Update | Enable Required Repositories
   command: "subscription-manager repos --enable='{{ item }}'"
   with_items: "{{ satellite_repositories }}"
-    - rhel-7-server-rpms
-    - rhel-7-server-satellite-6.2-rpms
-    - rhel-server-rhscl-7-rpms
   become: True
 
 - name: Satellite | Update | Download updated packages
