@@ -1,0 +1,56 @@
+---
+# Updates Satellite Servers or Satellite Capsule Servers to latest micro version.
+# 
+# PARAMETERS
+# 
+# @param satellite_scenario     `satellite` or `capsule`
+# @param satellite_repositories Exclusive list of repositories to be enabled pre-update
+#
+# @SEE https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_satellite_server_to_next_minor_version
+# @SEE https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_capsule_server_to_next_minor_version
+
+- name: Satellite | Update | Disable All Repositories
+  command: "subscription-manager repos --disable='*'"
+  become: True
+
+- name: Satellite | Update | Enable Required Repositories
+  command: "subscription-manager repos --enable='{{ item }}'"
+  with_items: "{{ satellite_repositories }}"
+    - rhel-7-server-rpms
+    - rhel-7-server-satellite-6.2-rpms
+    - rhel-server-rhscl-7-rpms
+  become: True
+
+- name: Satellite | Update | Download updated packages
+  command: yum update --downloadonly
+  become: True
+
+- name: Satellite | Update | Stop Katello
+  command: katello-service stop
+  become: True
+
+- name: Satellite | Update | Update all packages
+  yum:
+    name: '*'
+    state: latest
+  become: True
+
+- name: Satellite | Update | Reboot if Required
+  include_tasks: host-reboot.yml
+  vars:
+    host_reboot_only_if_needed: True
+
+- name: Satellite | Update | Stop Katello
+  command: katello-service stop
+  become: True
+
+- name: Satellite | Update | Run satellite-installer upgrader
+  command: "satellite-installer --scenario {{ satellite_scenario }} --upgrade"
+  become: True
+  register: satellite_server_upgrade
+
+- name: Satellite | Update | Restart goferd
+  service:
+    name: goferd
+    state: restarted
+  become: True
