@@ -18,6 +18,12 @@
   with_items: "{{ satellite_repositories }}"
   become: True
 
+# need to ensure this is installed before katello is shutdown
+- name: Satellite | Update | Install yum-utils
+  package:
+    name: yum-utils
+    state: present
+
 - name: Satellite | Update | Download updated packages
   command: yum update --downloadonly
   become: True
