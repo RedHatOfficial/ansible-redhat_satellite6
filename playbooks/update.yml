@@ -16,7 +16,7 @@
   tasks:
     - include_tasks: tasks/satellite-update.yml
       vars:
-        satellite_scenario: satellite
+        satellite_scenario: capsule
         satellite_repositories:
           - rhel-7-server-rpms
           - rhel-7-server-satellite-capsule-6.2-rpms
