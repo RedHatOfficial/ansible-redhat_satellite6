@@ -25,7 +25,7 @@
     state: present
 
 - name: Satellite | Update | Download updated packages
-  command: yum update --downloadonly
+  command: yum -y update --downloadonly
   become: True
 
 - name: Satellite | Update | Stop Katello
