@@ -24,7 +24,7 @@
 
 - name: Host Reboot | Shcedule Reboot
   command: "shutdown --reboot +1 'Reboot invoked by Ansible'"
-  register: redhat_reboot
+  register: host_reboot
   when: needs_restart_result.changed or not host_reboot_only_if_needed
 
 - name: Host Reboot | Wait for host after reboot
@@ -36,4 +36,4 @@
     timeout: 600
   delegate_to: localhost
   become: False
-  when: redhat_reboot.changed
+  when: host_reboot.changed

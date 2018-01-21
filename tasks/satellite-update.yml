@@ -24,24 +24,19 @@
     name: yum-utils
     state: present
 
+# can't use `yum` or `package` modules because no way to pass `--downloadonly` flag
 - name: Satellite | Update | Download updated packages
-  command: yum -y update --downloadonly
+  command: yum update --downloadonly
   become: True
 
 - name: Satellite | Update | Stop Katello
   command: katello-service stop
   become: True
 
+# can't use `yum` or `package` modules because no way to pass `--cachonly` flag
 - name: Satellite | Update | Update all packages
-  yum:
-    name: '*'
-    state: latest
+  command: yum update --cacheonly
   become: True
-
-- name: Satellite | Update | Reboot if Required
-  include_tasks: host-reboot.yml
-  vars:
-    host_reboot_only_if_needed: True
 
 - name: Satellite | Update | Stop Katello
   command: katello-service stop
@@ -52,8 +47,14 @@
   become: True
   register: satellite_server_upgrade
 
+- name: Satellite | Update | Reboot if Required
+  include_tasks: host-reboot.yml
+  vars:
+    host_reboot_only_if_needed: True
+
 - name: Satellite | Update | Restart goferd
   service:
     name: goferd
     state: restarted
   become: True
+  when: host_reboot.changed
