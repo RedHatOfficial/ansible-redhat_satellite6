@@ -6,8 +6,9 @@
 # @param satellite_scenario     `satellite` or `capsule`
 # @param satellite_repositories Exclusive list of repositories to be enabled pre-update
 #
-# @SEE https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_satellite_server_to_next_minor_version
-# @SEE https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_capsule_server_to_next_minor_version
+# @see https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_satellite_server_to_next_minor_version
+# @see https://access.redhat.com/documentation/en-us/red_hat_satellite/6.2/html-single/installation_guide/#updating_capsule_server_to_next_minor_version
+# @see https://access.redhat.com/solutions/3222091
 
 - name: Satellite | Update | Disable All Repositories
   command: "subscription-manager repos --disable='*'"
@@ -34,8 +35,9 @@
   become: True
 
 # can't use `yum` or `package` modules because no way to pass `--cachonly` flag
+# NOTE: this differs from update instructions due to https://access.redhat.com/solutions/3222091
 - name: Satellite | Update | Update all packages
-  command: yum update --cacheonly
+  command: yum update --cache --disableplugin=enabled_repos_upload --disableplugin=package_upload --disableplugin=subscription-manager
   become: True
 
 - name: Satellite | Update | Stop Katello
