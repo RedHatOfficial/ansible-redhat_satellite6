@@ -37,7 +37,7 @@
 # can't use `yum` or `package` modules because no way to pass `--cachonly` flag
 # NOTE: this differs from update instructions due to https://access.redhat.com/solutions/3222091
 - name: Satellite | Update | Update all packages
-  command: yum update --cache --disableplugin=enabled_repos_upload --disableplugin=package_upload --disableplugin=subscription-manager
+  command: yum -y update --cache --disableplugin=enabled_repos_upload --disableplugin=package_upload --disableplugin=subscription-manager
   become: True
 
 - name: Satellite | Update | Stop Katello
