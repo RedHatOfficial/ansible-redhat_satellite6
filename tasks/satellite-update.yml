@@ -19,11 +19,15 @@
   with_items: "{{ satellite_repositories }}"
   become: True
 
-# need to ensure this is installed before katello is shutdown
-- name: Satellite | Update | Install yum-utils
+# need to ensure these are installed before katello is shutdown
+- name: Satellite | Update | Install prerequisite packages
   package:
-    name: yum-utils
+    name: "{{ item }}"
     state: present
+  with_items:
+    - yum-utils
+    - katello-agent
+    - gofer
 
 # can't use `yum` or `package` modules because no way to pass `--downloadonly` flag
 - name: Satellite | Update | Download updated packages
