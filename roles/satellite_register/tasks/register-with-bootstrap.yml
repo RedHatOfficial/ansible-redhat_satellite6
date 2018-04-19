@@ -1,0 +1,16 @@
+---
+- name: Satellite Register | Register with boostrap | Download bootstrap.py
+  get_url:
+    url: "http://{{ satellite_fqdn }}/pub/bootstrap.py"
+    dest: /usr/local/sbin/bootstrap.py
+    mode: 0755
+    owner: root
+    group: root
+  register: sat_url_result
+  until: sat_url_result | succeeded
+  retries: 10
+  delay: 1
+  ignore_errors: yes
+    
+- name: Satellite Register | Register with boostrap | Run bootstrap
+  command: "/usr/local/sbin/bootstrap.py -l {{ admin_user | default('foreman')}} -p {{ satellite_admin_pass }} -s {{ satellite_fqdn }} -o {{ satellite_org | default('Default Organization')}} -L {{ satellite_location }} -g {{ satellite_hostgroup }} -a {{ satellite_activation_key }}"
