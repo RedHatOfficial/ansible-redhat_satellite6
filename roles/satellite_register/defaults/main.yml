@@ -19,11 +19,11 @@ satellite_location: ''
 
 # Set host group to false if you don't want to run bootstrap.py
 # If a host group is defined, it will register to the host group defined.
-satellite_hostgroup: ''
+satellite_hostgroup: False
 
 # Activation key to use.
 # TODO: Generate a default from API if it already exists, elsewise, use this
 satellite_activation_key: ''
 
 # Whether or not to update all packages on host
-update_packages: 'false'
+satellite_update_packages: False

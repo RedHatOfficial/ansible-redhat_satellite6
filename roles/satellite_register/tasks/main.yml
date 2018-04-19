@@ -1,47 +1,14 @@
 ---
-# Register machines to Satellite 6.X
-- name: satellite_register | main | Download bootstrap.py from the {{ sat6_fqdn }}
-  get_url:
-    url: "http://{{ sat6_fqdn }}/pub/bootstrap.py"
-    dest: /usr/local/sbin/bootstrap.py
-    mode: 0755
-    owner: root
-    group: root
-  when: hostgroup != 'false'
-  register: sat_url_result
-  until: sat_url_result | succeeded
-  retries: 10
-  delay: 1
-  ignore_errors: yes
+- name: Satellite Register | Include Tasks for Register with Bootstrap
+  include_tasks: register-with-bootstrap.yml
+  when: satellite_hostgroup
 
-- name: satellite_register | main | Register to Satellite 6 through bootstrap.py and activation key
-  command: "/usr/local/sbin/bootstrap.py -l {{ admin_user | default('foreman')}} -p {{ admin_pass }} -s {{ sat6_fqdn }} -o {{ org | default('Default Organization')}} -L {{ loc }} -g {{ hostgroup }} -a {{ satellite_activation_key }}"
-  when: hostgroup != 'false'
+- name: Satellite Register | Include Tasks for Register Manually
+  include_tasks: register-manually.yml
+  when: not satellite_hostgroup
 
-- name: satellite_register | main | Install the katello-ca-consumer-latest.noarch.rpm from {{ sat6_fqdn }}
-  yum:
-    name: http://{{ sat6_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm
-    state: present
-  when: hostgroup == 'false'
-
-- name: satellite_register | main | Register to Satellite 6 if hostgroup is not defined
-  redhat_subscription:
-    state: present
-    activationkey: "{{ satellite_activation_key }}"
-    org_id: "{{ org }}"
-    autosubscribe: "{{ auto_subscribe | default('false')}}"
-  when: hostgroup == 'false'
-  register: 'registration_return'
-
-- name: satellite_register | main | Install the katello-agent if hostgroup is not defined
-  yum:
-    name: katello-agent
-    state: latest
-  when: hostgroup == 'false' and registration_return|success
-  notify: enable katello-agent
-
-- name: satellite_register | main | Update all packages on host
+- name: Satellite Register | Update all packages
   yum:
     name: '*'
     state: latest
-  when: update_packages != 'false'
+  when: satellite_update_packages
