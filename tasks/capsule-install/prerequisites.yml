@@ -1,0 +1,43 @@
+---
+- name: Satelllite | Caspule Install | Prerequisites | Registery with Satellite Server
+  include_role:
+    name: satellite_register
+
+- name: Satelllite | Caspule Install | Prerequisites | Include tasks for Enabling Repositories
+  include_tasks: tasks/repositories.yml
+
+- name: Satelllite | Caspule Install | Prerequisites | Install packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - chrony
+    - firewalld
+    - satellite-capsule
+
+- name: Satelllite | Caspule Install | Prerequisites | Enable services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - chronyd
+    - firewalld
+
+- name: Satelllite | Caspule Install | Prerequisites | Configure Firewall Ports
+  firewalld:
+    port: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items:
+    - "53/tcp"
+    - "67/udp"
+    - "69/udp"
+    - "80/tcp"
+    - "443/tcp"
+    - "5647/tcp"
+    - "8000/tcp"
+    - "8140/tcp"
+    - "8443/tcp"
+    - "9090/tcp"
