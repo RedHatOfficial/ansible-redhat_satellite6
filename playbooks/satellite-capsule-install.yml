@@ -1,0 +1,20 @@
+---
+- name: Satelllite | Caspule Install | Gather Facts
+  hosts: all
+  gather_facts: True
+
+- name: Satelllite | Caspule Install
+  hosts: satellite-capsule-servers
+  gather_facts: False
+  tasks:
+    - name: Satelllite | Caspule Install | Include Tasks for Gathering Facts
+      include_tasks: tasks/capsule-install/gather-facts.yml
+
+    - name: Satelllite | Caspule Install | Include Tasks for Prequisites
+      include_tasks: tasks/capsule-install/prerequisites.yml
+
+    - name: Satelllite | Caspule Install | Include Tasks for Generating Capsule Certificate Bundle
+      include_tasks: tasks/capsule-install/certificate-bundle.yml
+
+    - name: Satelllite | Caspule Install | Include Tasks for Installing Capsule Server
+      include_tasks: tasks/capsule-install/capsule-install.yml

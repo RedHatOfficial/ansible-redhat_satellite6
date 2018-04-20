@@ -1,0 +1,42 @@
+---
+- name: Satelllite | Caspule Install | Gather Facts | Set Satellite Server FQDN
+  set_fact:
+    satellite_server_host: "{{ hostvars[groups['satellite-servers'][0]]['ansible_fqdn'] }}"
+
+- name: Satelllite | Caspule Install | Gather Facts | Get Satellite settings
+  command: "hammer --username='{{ satellite_hammer_user }}' --password='{{ satellite_hammer_password }}' --output='json' settings list"
+  register: satellite_settings_result
+  changed_when: False
+  delegate_to: "{{ satellite_server_host }}"
+  run_once: True
+
+- name: Satelllite | Caspule Install | Gather Facts | Set Satellite settings
+  set_fact:
+    satellite_settings: "{{ satellite_settings_result.stdout | from_json }}"
+
+- name: Satelllite | Caspule Install | Gather Facts | Set oAuth Consumer Facts
+  set_fact:
+    satellite_oauth_consumer_key: "{{ satellite_settings | json_query(oauth_consumer_key_query) | first }}"
+    satellite_oauth_consumer_secret: "{{ satellite_settings | json_query(oauth_consumer_secret_query) | first }}"
+  vars:
+    oauth_consumer_key_query: "[?Name=='oauth_consumer_key'].Value"
+    oauth_consumer_secret_query: "[?Name=='oauth_consumer_secret'].Value"
+
+- name: Satelllite | Caspule Install | Gather Facts | Get Pulp oAuth secret
+  shell: "cat /etc/pulp/server.conf | sed -nr 's/^oauth_secret: (.*)/\\1/p'"
+  register: pulp_oauth_secret_result
+  changed_when: False
+  delegate_to: "{{ satellite_server_host }}"
+  run_once: True
+
+- name: Satelllite | Caspule Install | Gather Facts | Set Pulp oAuth secret Facts
+  set_fact:
+    satellite_pulp_oauth_secret: "{{ pulp_oauth_secret_result.stdout }}"
+
+- name: Satelllite | Caspule Install | Gather Facts | Set Capsule Certificates Directory Facts
+  set_fact:
+    satellite_capsule_server_certs_dir: "/root/ansible/capsule-certs"
+
+- name: Satelllite | Caspule Install | Gather Facts | Set Capsule Certificate Facts
+  set_fact:
+    satellite_capsule_server_cert_archive: "{{ satellite_capsule_server_certs_dir }}/{{ ansible_fqdn }}.tar"
