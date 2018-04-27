@@ -1,3 +1,4 @@
+---
 - name: "Create Logical Volume for mount: {{ mount }}"
   lvol:
     vg: "{{ satellite_vg }}"

@@ -1,16 +1,4 @@
-# OVERVIEW
-#  TODO
-#
-# VARS
-#   satellite_vg     - Volume Group for Satellite to use
-#   satellite_mounts - list of satellite mounts
-#     lv    - Logical Volume name
-#     size  - size of the mount
-#     mount - directory to mount
-#
-# SOURCE
-#   https://access.redhat.com/solutions/67781
-
+---
 - name: Install rsync
   package:
     name: rsync
