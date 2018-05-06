@@ -5,6 +5,12 @@
 
 - name: Satelllite | Caspule Install | Prerequisites | Include tasks for Enabling Repositories
   include_tasks: tasks/repositories.yml
+  vars:
+    repositories:
+      - rhel-7-server-rpms
+      - rhel-7-server-satellite-capsule-6.3-rpms
+      - rhel-server-rhscl-7-rpms
+      - rhel-7-server-satellite-tools-6.3-rpms
 
 - name: Satelllite | Caspule Install | Prerequisites | Install packages
   package:
@@ -30,14 +36,4 @@
     permanent: true
     immediate: true
     state: enabled
-  with_items:
-    - "53/tcp"
-    - "67/udp"
-    - "69/udp"
-    - "80/tcp"
-    - "443/tcp"
-    - "5647/tcp"
-    - "8000/tcp"
-    - "8140/tcp"
-    - "8443/tcp"
-    - "9090/tcp"
+  with_items: "{{ satellite_firewall_ports }}"

@@ -21,4 +21,4 @@
       include_tasks: tasks/capsule/certificate-bundle.yml
 
     - name: Satellite | Capsule Install | Include Tasks for Installing Capsule Server
-      include_tasks: tasks/capsule/capsule.yml
+      include_tasks: tasks/capsule/capsule-install.yml
