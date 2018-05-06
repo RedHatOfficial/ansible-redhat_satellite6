@@ -1,0 +1,124 @@
+- name: Satellite | Upgrade to 6.3 | Satellite Servers
+  hosts: satellite-servers
+  tasks:
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Include tasks for Enabling Repositories
+      include_tasks: tasks/repositories.yml
+      vars:
+        repositories:
+          - rhel-7-server-rpms
+          - rhel-server-rhscl-7-rpms
+          - rhel-7-server-satellite-tools-6.3-rpms
+          - rhel-7-server-satellite-6.3-rpms
+          - rhel-7-server-satellite-maintenance-6-rpms
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Configure firewall
+      firewalld:
+        port: "{{ item }}"
+        permanent: True
+        state: enabled
+        immediate: True
+      with_items: "{{ satellite_firewall_ports }}"
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Install packages
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - hdparm
+        - rubygem-foreman_maintain
+    
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Verify upgrade list
+      command: foreman-maintain upgrade list-versions
+      register: foreman_upgrade_versions_result
+      failed_when: "'6.3' not in foreman_upgrade_versions_result.stdout"
+      changed_when: False
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Configure foreman-maintain-hammer.yml
+      template:
+        src: foreman-maintain-hammer.yml.j2
+        dest: /etc/foreman-maintain/foreman-maintain-hammer.yml
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Upgrade check
+      shell: >
+        foreman-maintain upgrade check
+          -y
+          --target-version 6.3
+          --whitelist="disk-performance"
+      changed_when: False
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Upgrade
+      shell: >
+        foreman-maintain upgrade run
+          -y
+          --target-version 6.3
+          --whitelist="disk-performance"
+      async: 18000
+      poll: 60
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Servers | Include tasks for update
+      include_tasks: tasks/updates/satellite-server-update.yml
+
+- name: Satellite | Upgrade to 6.3 | Satellite Capsule
+  hosts: satellite-capsule-servers
+  serial: 1
+  tags:
+    - satellite-capsule-upgrade
+  tasks:
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Include tasks for Enabling Repositories
+      include_tasks: tasks/repositories.yml
+      vars:
+        repositories:
+          - rhel-7-server-rpms
+          - rhel-server-rhscl-7-rpms
+          - rhel-7-server-satellite-tools-6.3-rpms
+          - rhel-7-server-satellite-capsule-6.3-rpms
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Configure firewall
+      firewalld:
+        port: "{{ item }}"
+        permanent: True
+        state: enabled
+        immediate: True
+      with_items: "{{ satellite_firewall_ports }}"
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Yum clean
+      shell: yum -y clean all; rm -rf /var/cache/yum;
+      changed_when: False
+      args:
+        warn: False
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Katello service stop
+      command: katello-service stop
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Update all packages
+      package:
+        name: '*'
+        state: latest
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Include tasks for gathering facts
+      include_tasks: tasks/capsule/gather-facts.yml
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Include tasks for certificate bundle
+      include_tasks: tasks/capsule/certificate-bundle.yml
+    
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Install packages
+      package:
+        name: "{{ item }}"
+        state: latest
+      with_items:
+        - rubygem-smart_proxy_discovery
+
+    - name: Satellite | Upgrade to 6.3 | Satellite Capsule | Upgrade
+      command: >
+        satellite-installer
+          --scenario capsule
+          --upgrade
+          --foreman-proxy-content-certs-tar '{{ satellite_capsule_server_cert_archive }}'
+          --certs-update-all
+          --certs-regenerate true
+          --certs-deploy true
+      async: 18000
+      poll: 60

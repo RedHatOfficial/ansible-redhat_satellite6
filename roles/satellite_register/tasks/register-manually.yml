@@ -10,8 +10,9 @@
     state: present
     activationkey: "{{ satellite_activation_key }}"
     org_id: "{{ satellite_org }}"
+    force_register: "{{ satellite_register_force | default(False) }}"
   register: 'registration_return'
-    
+  
 - name: Satellite Register | Register Manually | Install katello-agent
   yum:
     name: katello-agent

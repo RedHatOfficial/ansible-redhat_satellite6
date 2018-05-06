@@ -7,14 +7,18 @@
   hosts: satellite-capsule-servers
   gather_facts: False
   tasks:
-    - name: Satelllite | Caspule Install | Include Tasks for Gathering Facts
-      include_tasks: tasks/capsule-install/gather-facts.yml
+    - name: Satellite | Capsule Install | Include Tasks for Gathering Facts
+      include_tasks: tasks/capsule/gather-facts.yml
 
-    - name: Satelllite | Caspule Install | Include Tasks for Prequisites
-      include_tasks: tasks/capsule-install/prerequisites.yml
+    - name: Satellite | Capsule Install | Include Tasks for Prequisites
+      include_tasks: tasks/capsule/prerequisites.yml
 
-    - name: Satelllite | Caspule Install | Include Tasks for Generating Capsule Certificate Bundle
-      include_tasks: tasks/capsule-install/certificate-bundle.yml
+    - name: Satellite | Capsule Install | Configure storage
+      include_role:
+        name: satellite_storage
 
-    - name: Satelllite | Caspule Install | Include Tasks for Installing Capsule Server
-      include_tasks: tasks/capsule-install/capsule-install.yml
+    - name: Satellite | Capsule Install | Include Tasks for Generating Capsule Certificate Bundle
+      include_tasks: tasks/capsule/certificate-bundle.yml
+
+    - name: Satellite | Capsule Install | Include Tasks for Installing Capsule Server
+      include_tasks: tasks/capsule/capsule.yml

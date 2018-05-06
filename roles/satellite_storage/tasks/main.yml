@@ -1,8 +1,11 @@
 ---
-- name: Install rsync
+- name: Install required packages
   package:
-    name: rsync
+    name: "{{ item }}"
     state: latest
+  with_items:
+    - rsync
+    - lvm2
   tags:
     - backup_future_mount_destination
 
