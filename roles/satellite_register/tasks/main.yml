@@ -13,7 +13,7 @@
     - name: Satellite Register | Include Tasks for Register Manually
       include_tasks: register-manually.yml
       when: not satellite_hostgroup
-  when: not katello_server_ca_stat_result.stat.exists
+  when: (not katello_server_ca_stat_result.stat.exists) or (satellite_register_force)
 
 - name: Satellite Register | Update all packages
   yum:
