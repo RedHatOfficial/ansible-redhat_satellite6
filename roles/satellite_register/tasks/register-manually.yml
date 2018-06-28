@@ -3,7 +3,7 @@
   yum:
     name: http://{{ satellite_fqdn }}/pub/katello-ca-consumer-latest.noarch.rpm
     validate_certs: "{{ satellite_validate_certs | default(True) }}"
-    state: present
+    state: latest
     
 - name: Satellite Register | Register Manually | Register with Subscription Manager
   redhat_subscription:
