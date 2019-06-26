@@ -1,0 +1,51 @@
+---
+- name: Satellite Storage | Verify satellite_type variable
+  fail:
+    msg: "satellite_type must be one of ['master', 'capsule'] got '{{ satellite_type }}'"
+  when: satellite_type is not in satellite_types
+
+- name: Satellite Storage | Install required packages
+  package:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - lvm2
+
+- name: "Create {{ satellite_vg }} Volume Group"
+  lvg:
+    vg: "{{ satellite_vg }}"
+    pvs: "{{ satellite_pvs }}"
+
+- name: Satellite Storage | Determine mount points | Master
+  set_fact:
+    mounts: "{{ satellite_master_mounts }}"
+  when:
+  - satellite_type == "master"
+
+- name: Satellite Storage | Determine mount points | Capsule
+  set_fact:
+    mounts: "{{ satellite_capsule_mounts }}"
+  when:
+  - satellite_type == "capsule"
+
+- name: Satellite Storage | Check if mount points already mounted
+  command: "mountpoint {{item.mount }}"
+  failed_when: False
+  changed_when: False
+  register: mounts_stats
+  when: ( item.size | regex_replace('^([0-9]*).*', '\\1') | int ) != 0
+  with_items: "{{ mounts }}"
+
+- name: Satellite Storage | Include task list to create mount points
+  include: create_mount.yml
+  vars:
+    lv: "{{ item.0.lv }}"
+    size: "{{ item.0.size }}"
+    mount: "{{ item.0.mount }}"
+  when:
+  - ( item.0.size | regex_replace('^([0-9]*).*', '\\1') | int ) != 0
+  - item.1.rc != 0
+  with_together:
+  - "{{ mounts }}"
+  - "{{ mounts_stats.results }}"
+  

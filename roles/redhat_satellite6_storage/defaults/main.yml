@@ -1,0 +1,21 @@
+satellite_pvs: /dev/vdb
+satellite_vg: vg_satellite
+
+satellite_lv_pulp_cache_size: 20g
+
+satellite_lv_pulp_size: 500g
+
+satellite_lv_mongodb_size: 50g
+
+# The /var/lib/qpidd/ directory uses slightly more than 2 MB per Content Host
+# managed by the goferd service. For example, 10,000 Content Hosts require
+# 20 GB of disk space in /var/lib/qpidd/
+satellite_lv_qpidd_size: 10g
+
+satellite_lv_pgsql_size: 10g
+
+satellite_lv_squid_size: 10g
+
+satellite_lv_puppetlabs_size: 0g
+
+satellite_lv_puppet_env_size: 0g
