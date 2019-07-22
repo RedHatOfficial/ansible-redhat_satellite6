@@ -27,7 +27,7 @@ sat6-capsule-01.example.com
 
 sat6-capsule-02.example.com
 
-| Varible  |      Example      |
+| Variable  |      Example      |
 |----------|:-------------:|
 | domain:  |  example.com  |
 | sat_server: | sat6-master-01.{{ domain }}     |
