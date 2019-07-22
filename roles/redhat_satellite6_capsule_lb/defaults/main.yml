@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD:roles/redhat_satellite6_capsule_lb/defaults/main.yml
 # defaults file for satellite_lb
 domain: example.com
 sat_server: sat6-master-01.{{ domain }}
@@ -10,6 +9,3 @@ location: LOC1
 cert_path1: /tmp/{{ capsule1 }}.tar
 cert_path2: /tmp/{{ capsule2 }}.tar
 lb_server: capsule.{{ domain }}
-=======
-# vars file for satellite_lb
->>>>>>> 3173f5b3377304997b5f7b8daae4f48afb3afaed:roles/redhat_satellite6_lb/vars/main.yml
