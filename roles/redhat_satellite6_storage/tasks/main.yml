@@ -2,7 +2,7 @@
 - name: Satellite Storage | Verify satellite_type variable
   fail:
     msg: "satellite_type must be one of ['master', 'capsule'] got '{{ satellite_type }}'"
-  when: satellite_type is not in satellite_types
+  when: satellite_type not in satellite_types
 
 - name: Satellite Storage | Install required packages
   package:
