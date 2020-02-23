@@ -1,0 +1,92 @@
+---
+# tasks file for satellite_lb
+
+- name: Generate LB Certs 1
+  when: inventory_hostname in groups['satellite']
+  shell: capsule-certs-generate --foreman-proxy-fqdn "{{ capsule1 }}" --certs-tar /tmp/capsule1.tar --foreman-proxy-cname "{{ lb_server }}"
+
+- name: Generate LB Certs 2
+  when: inventory_hostname in groups['satellite']
+  shell: capsule-certs-generate --foreman-proxy-fqdn "{{ capsule2 }}" --certs-tar /tmp/capsule2.tar --foreman-proxy-cname "{{ lb_server }}"
+
+- name: pull the cert from the {{ sat_server }} to the local machine
+  when: inventory_hostname in groups['satellite']
+  fetch:
+    flat: yes
+    src: /tmp/capsule1.tar
+    dest: /tmp/
+
+- name: pull the cert from the {{ sat_server }} to the local machine
+  when: inventory_hostname in groups['satellite']
+  fetch:
+    flat: yes
+    src: /tmp/capsule2.tar
+    dest: /tmp/
+
+- name: push cert to {{ capsule1 }}
+  when: inventory_hostname == "{{ capsule1 }}"
+  copy:
+    src: /tmp/capsule1.tar
+    dest: /tmp/
+
+- name: push cert to {{ capsule2 }}
+  when: inventory_hostname == "{{ capsule2 }}"
+  copy:
+    src: /tmp/capsule2.tar
+    dest: /tmp/
+
+- name: Ensure LB Redirect config
+  lineinfile:
+    path: /etc/foreman-installer/custom-hiera.yaml
+    state: present
+    line: 'pulp::lazy_redirect_host: "{{ lb_server }}"'
+
+- name: obtain the foreman-proxy-oauth-consumer-key
+  delegate_to: "{{ sat_server }}"
+  shell: "grep consumer_key /etc/foreman/settings.yaml | awk '{print $2}'"
+  register: consumerkey
+
+- name: obtain the foreman-proxy-oauth-consumer-secret
+  delegate_to: "{{ sat_server }}"
+  shell: "grep consumer_secret /etc/foreman/settings.yaml | awk '{print $2}'"
+  register: consumersecret
+
+- name: Re-run Satellite Installer on Capsule1
+  when: inventory_hostname == "{{ capsule1 }}"
+  command: >
+    satellite-installer --scenario capsule \
+    --foreman-proxy-content-parent-fqdn        "{{ sat_server }}" \
+    --foreman-proxy-register-in-foreman        "true" \
+    --foreman-proxy-foreman-base-url           "https://{{ sat_server }}" \
+    --foreman-proxy-trusted-hosts              "{{ sat_server }}" \
+    --foreman-proxy-trusted-hosts              "{{ capsule1 }}" \
+    --foreman-proxy-oauth-consumer-key         "{{ consumerkey.stdout }}" \
+    --foreman-proxy-oauth-consumer-secret      "{{ consumersecret.stdout }}" \
+    --foreman-proxy-content-certs-tar          "/tmp/capsule1.tar" \
+    --puppet-server-foreman-url                "https://{{ sat_server }}" \
+    --certs-cname                              "{{ lb_server }}" \
+    --puppet-dns-alt-names                     "{{ lb_server }}" \
+    --puppet-ca-server                         "{{ capsule1 }}" \
+    --foreman-proxy-puppetca                   "true" \
+    --puppet-server-ca                         "true" \
+    --enable-foreman-proxy-plugin-remote-execution-ssh
+
+- name: Re-run Satellite Installer on Capsule2
+  when: inventory_hostname == "{{ capsule2 }}"
+  command: >
+    satellite-installer --scenario capsule \
+    --foreman-proxy-content-parent-fqdn        "{{ sat_server }}" \
+    --foreman-proxy-register-in-foreman        "true" \
+    --foreman-proxy-foreman-base-url           "https://{{ sat_server }}" \
+    --foreman-proxy-trusted-hosts              "{{ sat_server }}" \
+    --foreman-proxy-trusted-hosts              "{{ capsule2 }}" \
+    --foreman-proxy-oauth-consumer-key         "{{ consumerkey.stdout }}" \
+    --foreman-proxy-oauth-consumer-secret      "{{ consumersecret.stdout }}" \
+    --foreman-proxy-content-certs-tar          "/tmp/capsule2.tar" \
+    --puppet-server-foreman-url                "https://{{ sat_server }}" \
+    --certs-cname                              "{{ lb_server }}" \
+    --puppet-dns-alt-names                     "{{ lb_server }}" \
+    --puppet-ca-server                         "{{ capsule1 }}" \
+    --foreman-proxy-puppetca                   "false" \
+    --puppet-server-ca                         "false" \
+    --enable-foreman-proxy-plugin-remote-execution-ssh
