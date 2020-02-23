@@ -1,0 +1,17 @@
+---
+# packages
+core_packages:
+  - lvm2
+
+# storage configuration
+satellite_pvs: /dev/sdb
+satellite_vg: vg_satellite
+satellite_type: master
+satellite_fs_type: xfs
+satellite_mounts:
+  - /var/cache/pulp
+  - /var/lib/pulp
+  - /var/lib/mongodb
+  - /var/lib/qpidd
+  - /var/lib/pgsql
+  - /var/spool/squid

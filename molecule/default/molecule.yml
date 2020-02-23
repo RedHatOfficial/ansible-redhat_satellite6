@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: vagrant
+  provider:
+    name: virtualbox
+platforms:
+  - name: centos7
+    box: centos/7
+    provider_raw_config_args:
+      - "customize ['createhd', '--filename', 'second_disk.vdi', '--size', 450 * 1024]"
+      - "customize ['storageattach', :id,  '--storagectl', 'IDE', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', 'second_disk.vdi']"
+  - name: rhel7
+    box: generic/rhel7
+    provider_raw_config_args:
+      - "customize ['createhd', '--filename', 'second_disk.vdi', '--size', 450 * 1024]"
+      - "customize ['storageattach', :id,  '--storagectl', 'IDE', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', 'second_disk.vdi']"
+provisioner:
+  name: ansible
+  lint:
+    name: ansible-lint
+verifier:
+  name: testinfra
+  lint:
+    name: flake8
