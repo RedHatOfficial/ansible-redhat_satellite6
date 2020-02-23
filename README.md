@@ -14,7 +14,7 @@ See [Satellite 6 Installation Guide - 1.2.1. Storage Requirements](https://acces
 |--------------------------------|---------------|------------
 | `satellite_pvs`                | /dev/vdb      | Physical volume(s) to use for Satellite storage.
 | `satellite_vg`                 | satellite\_vg | Volume group to use or create for Satellite storage.
-| `satellite_type`               |               | One of ['master', 'capsule'] to configure the storage for the given type.
+| `satellite_type`               | master        | One of ['master', 'capsule'] to configure the storage for the given type.
 | `satellite_lv_pulp_cache_size` | 20g           | Initial size of the `/var/cache/pulp` volume.
 | `satellite_lv_pulp_size`       | 500g          | Initial size of the `/var/lib/pulp` volume.
 | `satellite_lv_mongodb_size`    | 50g           | Initial size of the `/var/lib/mongodb` volume.
