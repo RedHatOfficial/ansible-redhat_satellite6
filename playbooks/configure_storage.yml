@@ -1,7 +1,0 @@
-- name: Satelllite | Configure Storage
-  hosts: all
-  gather_facts: True
-  become: True
-  tasks:
-  - import_role:
-      name: redhat_satellite6_storage
