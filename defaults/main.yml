@@ -11,7 +11,7 @@ satellite_type: master
 satellite_lv_pulp_cache_size: 20g
 # Initial size of the /var/cache/pulp volume
 
-satellite_lv_pulp_size: 500g
+satellite_lv_pulp_size: 300g
 # Initial size of the /var/lib/pulp volume
 
 satellite_lv_mongodb_size: 50g
