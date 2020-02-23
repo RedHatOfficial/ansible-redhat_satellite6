@@ -10,7 +10,7 @@
   with_items:
   - lvm2
 
-- name: "Create {{ satellite_vg }} Volume Group"
+- name: "Satellite Storage | Create {{ satellite_vg }} Volume Group"
   lvg:
     vg: "{{ satellite_vg }}"
     pvs: "{{ satellite_pvs }}"

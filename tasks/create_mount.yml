@@ -1,17 +1,17 @@
 ---
-- name: "Create Logical Volume for mount: {{ mount }}"
+- name: "Satellite Storage | Create Logical Volume for mount: {{ mount }}"
   lvol:
     vg: "{{ satellite_vg }}"
     lv: "{{ lv }}"
     size: "{{ size }}"
     force: yes
 
-- name: "Create File System for mount: {{ mount }}"
+- name: "Satellite Storage | Create File System for mount: {{ mount }}"
   filesystem:
     fstype: xfs
     dev: "/dev/{{ satellite_vg }}/{{ lv }}"
 
-- name: "Create Mount: {{ mount }}"
+- name: "Satellite Storage | Create Mount: {{ mount }}"
   mount:
     name: "{{ mount }}"
     src: "/dev/{{ satellite_vg }}/{{ lv }}"
